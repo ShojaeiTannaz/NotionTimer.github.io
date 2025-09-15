@@ -5,67 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Focus Timer</title>
 
-  <!-- Firebase SDK + Push Notifications -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
-    import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-messaging.js";
-    import { getDatabase, ref, push as dbPush, get } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyATNIhQEouVeGIvUdYo-dVmeO1nTRUCQPI",
-      authDomain: "notionnotifications-85d2f.firebaseapp.com",
-      databaseURL: "https://notionnotifications-85d2f-default-rtdb.firebaseio.com",
-      projectId: "notionnotifications-85d2f",
-      storageBucket: "notionnotifications-85d2f.firebasestorage.app",
-      messagingSenderId: "277717680457",
-      appId: "1:277717680457:web:9eb25c19a4c3fcaa549a98",
-      measurementId: "G-Z635J2FR4F"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const database = getDatabase(app);
-    const messaging = getMessaging(app);
-
-    async function enablePushAuto() {
-      try {
-        const permission = await Notification.requestPermission();
-        if (permission !== "granted") return;
-
-        const vapidKey = "BAzA5FufrNRozeR-U9JJr9PpPGVF8ZuU8_BudSBSK2ZemJO0g_JIqyr95ksWIuw91_GFfUeuDr0TA8rqzuafuQo";
-        const token = await getToken(messaging, { vapidKey });
-
-        const tokenRef = ref(database, "tokens");
-        const snapshot = await get(tokenRef);
-        const tokens = snapshot.exists() ? Object.values(snapshot.val()) : [];
-        if (!tokens.includes(token)) {
-          await dbPush(tokenRef, token);
-          console.log("Push token saved:", token);
-        } else {
-          console.log("Token already exists, not saved again:", token);
-        }
-      } catch (e) {
-        console.error("Push failed:", e);
-      }
-    }
-
-    window.setupPushButton = function (button) {
-      button.addEventListener("click", enablePushAuto);
-      enablePushAuto();
-    };
-  </script>
-
   <style>
     :root { --purple: #7a50a7; --light-bg: rgba(255,255,255,0.05); --dark-bg: rgba(30,30,30,0.15); }
-    body { display: flex; justify-content:center; align-items:center; height:100vh; margin:0; font-family:Arial,sans-serif; background:transparent; color:var(--purple); transition:background 0.3s,color 0.3s;}
+    body { display:flex; justify-content:center; align-items:center; height:100vh; margin:0; font-family:Arial,sans-serif; background:transparent; color:var(--purple); transition:background 0.3s,color 0.3s;}
     body.light { background:#f0f0f0; color:var(--purple); }
     body.dark { background:#0f0f0f; color:var(--purple); }
 
-    .timer-container { backdrop-filter: blur(15px); background:var(--light-bg); padding:2rem; border-radius:1.5rem; border:1px solid rgba(122,80,167,0.3); box-shadow:0 12px 30px rgba(122,80,167,0.5); text-align:center; width:280px; position:relative; transition: background 0.3s, box-shadow 0.3s;}
+    .timer-container { backdrop-filter:blur(15px); background:var(--light-bg); padding:2rem; border-radius:1.5rem; border:1px solid rgba(122,80,167,0.3); box-shadow:0 12px 30px rgba(122,80,167,0.5); text-align:center; width:280px; position:relative; transition: background 0.3s, box-shadow 0.3s;}
     body.dark .timer-container { background:var(--dark-bg); }
 
-    .time-display { font-size:2.8rem; font-weight:bold; margin-bottom:1.5rem; outline:none; border:none; background:transparent; color:var(--purple); text-align:center; width:100%; text-shadow:0 2px 5px rgba(122,80,167,0.4); }
+    .time-display { font-size:2.8rem; font-weight:bold; margin-bottom:1.5rem; outline:none; border:none; background:transparent; color:var(--purple); text-align:center; width:100%; text-shadow:0 2px 5px rgba(122,80,167,0.4);}
     .buttons { display:flex; justify-content:space-between; gap:1rem; margin-bottom:1.5rem; }
     .btn { width:55px; height:55px; border-radius:50%; border:1px solid rgba(122,80,167,0.4); background: rgba(122,80,167,0.15); color:var(--purple); cursor:pointer; transition: background 0.2s, box-shadow 0.2s; display:flex; justify-content:center; align-items:center; box-shadow:0 4px 10px rgba(122,80,167,0.3);}
     .btn:hover { background: rgba(122,80,167,0.3); box-shadow:0 6px 15px rgba(122,80,167,0.5);}
@@ -73,10 +22,45 @@
 
     .theme-switch { position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; border:1px solid rgba(122,80,167,0.4); background: rgba(122,80,167,0.15); display:flex; justify-content:center; align-items:center; cursor:pointer; box-shadow:0 2px 6px rgba(122,80,167,0.3); transition: background 0.2s, box-shadow 0.2s;}
     .theme-switch:hover { background: rgba(122,80,167,0.3); box-shadow:0 4px 10px rgba(122,80,167,0.5);}
+    
+    /* --- Modal overlay --- */
+.overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.4); /* شفاف برای نشون دادن تم پشت */
+  display: flex; justify-content:center; align-items:center;
+  z-index:100; backdrop-filter: blur(10px);
+  visibility: hidden; opacity:0; transition:opacity 0.3s, visibility 0.3s;
+}
+.overlay.active { visibility: visible; opacity: 1; }
 
-    .push-btn { position:absolute; top:10px; left:10px; width:40px; height:40px; border-radius:50%; background: rgba(122,80,167,0.15); border:1px solid rgba(122,80,167,0.4); display:flex; justify-content:center; align-items:center; cursor:pointer; box-shadow:0 2px 6px rgba(122,80,167,0.3); transition: background 0.2s, box-shadow 0.2s;}
-    .push-btn:hover { background: rgba(122,80,167,0.3); box-shadow:0 4px 10px rgba(122,80,167,0.5);}
-    .push-btn svg { width:22px; height:22px; fill:var(--purple); }
+.modal {
+  padding: 2rem; border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  text-align:center; width: 250px;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(122,80,167,0.3);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* هماهنگی modal با تم */
+body.light .modal {
+  background: rgba(255,255,255,0.9);
+  color: var(--purple);
+}
+body.dark .modal {
+  background: rgba(20,20,20,0.9);
+  color: var(--purple);
+}
+
+.modal button {
+  margin-top:1rem; padding:0.5rem 1rem;
+  border:none; border-radius:0.5rem;
+  background: var(--purple); color:white;
+  cursor:pointer; font-weight:bold;
+  transition: background 0.2s;
+}
+.modal button:hover { background: #693c97; }
+
   </style>
 </head>
 <body>
@@ -85,21 +69,26 @@
     <input type="text" class="time-display" id="timeDisplay" value="05:00">
 
     <div class="buttons">
-      <button class="btn" id="stopBtn">
+      <!-- دکمه اتمام (مربع) -->
+      <button class="btn" id="endBtn">
         <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>
       </button>
+      <!-- استارت -->
       <button class="btn" id="startBtn">
         <svg viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19"/></svg>
       </button>
+      <!-- توقف موقت -->
       <button class="btn" id="pauseBtn">
         <svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
       </button>
     </div>
+  </div>
 
-    <div class="push-btn" id="pushBtn">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 2C10.343 2 9 3.343 9 5v1.07C6.163 7.165 4 10.077 4 13v5l-1 1v1h18v-1l-1-1v-5c0-2.923-2.163-5.835-5-6.93V5c0-1.657-1.343-3-3-3zm0 20c1.105 0 2-.895 2-2H10c0 1.105.895 2 2 2z"/>
-      </svg>
+  <!-- Modal -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h3>Complete the form</h3>
+      <button id="okBtn">OK</button>
     </div>
   </div>
 
@@ -107,13 +96,15 @@
     let timer;
     let time = 300;
     let running = false;
+    const FORM_URL = "https://forms.notion.com/your-form-link"; // 🔗 لینک فرم نوشن اینجا
 
     const timeDisplay = document.getElementById('timeDisplay');
     const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
-    const stopBtn = document.getElementById('stopBtn');
+    const endBtn = document.getElementById('endBtn');
     const themeSwitch = document.getElementById('themeSwitch');
-    const pushBtn = document.getElementById('pushBtn');
+    const overlay = document.getElementById('overlay');
+    const okBtn = document.getElementById('okBtn');
 
     const alarm = new Audio("success-340660.mp3");
 
@@ -124,24 +115,51 @@
     }
     function updateDisplay(){ timeDisplay.value = formatTime(time); }
 
+    function showOverlay(){
+      overlay.classList.add("active");
+    }
+    function hideOverlay(){
+      overlay.classList.remove("active");
+    }
+
+    function resetTimer(){
+      clearInterval(timer); running=false;
+      time = 300; // برگردوندن به 5 دقیقه
+      updateDisplay();
+    }
+
     startBtn.onclick = ()=>{
       if(!running){
         running=true;
         timer=setInterval(()=>{
-          if(time>0){time--; updateDisplay();}
+          if(time>0){ time--; updateDisplay(); }
           else{
-            clearInterval(timer); running=false; 
-            alarm.play(); // فقط وقتی خودش تموم بشه صدا میاد
+            clearInterval(timer); running=false;
+            alarm.play();
+            showOverlay(); // نمایش modal وقتی خودکار تموم میشه
           }
         },1000);
       }
     };
     pauseBtn.onclick = ()=>{ if(running){clearInterval(timer); running=false;} };
-    stopBtn.onclick = ()=>{ clearInterval(timer); running=false; time=0; updateDisplay(); };
+    endBtn.onclick = ()=>{
+      clearInterval(timer); running=false;
+      time=0; updateDisplay();
+      showOverlay(); // نمایش modal وقتی دکمه اتمام زده میشه
+    };
+
+    okBtn.onclick = ()=>{
+      window.open(FORM_URL, "_blank"); // باز کردن فرم در تب جدید
+      hideOverlay();
+      resetTimer();
+    };
 
     timeDisplay.addEventListener("change", ()=>{
       const parts=timeDisplay.value.split(":");
-      if(parts.length===2){time=parseInt(parts[0])*60+parseInt(parts[1])||0; updateDisplay();}
+      if(parts.length===2){
+        time=parseInt(parts[0])*60+parseInt(parts[1])||0;
+        updateDisplay();
+      }
     });
 
     function applyTheme(theme){
@@ -154,9 +172,6 @@
     else{applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches?"dark":"light");}
     themeSwitch.onclick=()=>{applyTheme(document.body.classList.contains("light")?"dark":"light");}
     updateDisplay();
-
-    // اتصال دکمه Push
-    window.setupPushButton(pushBtn);
   </script>
 </body>
 </html>
