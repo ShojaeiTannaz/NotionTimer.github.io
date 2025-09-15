@@ -7,9 +7,9 @@
 
   <style>
     :root {
-      --purple: #7a50a7;
+      --purple: #7a50a7; /* رنگ اصلی بنفش */
       --light-bg: rgba(255,255,255,0.05);
-      --dark-bg: #2c2c2b; /* رنگ دارک مثل callout نوشن */
+      --dark-bg: #191919;
     }
 
     body {
@@ -27,13 +27,13 @@
     }
 
     body.dark {
-      background:var(--dark-bg); 
-      color:var(--purple);
+      background: linear-gradient(145deg, #191919, #0f0f0f);
+      color: var(--purple);
     }
 
     .timer-container {
       backdrop-filter: blur(15px);
-      background:var(--light-bg);
+      background: var(--light-bg);
       padding:2rem; border-radius:1.5rem;
       border:1px solid rgba(122,80,167,0.3);
       box-shadow:0 12px 30px rgba(122,80,167,0.5);
@@ -42,27 +42,33 @@
     }
 
     body.dark .timer-container {
-      background: rgba(44,44,43,0.95); /* هم‌رنگ callout نوشن */
+      background: rgba(25,25,25,0.92); 
+      border: 1px solid rgba(122,80,167,0.5);
+      box-shadow: 0 12px 35px rgba(122,80,167,0.6), inset 0 0 20px rgba(122,80,167,0.1);
     }
 
     .time-display {
       font-size:2.8rem; font-weight:bold; margin-bottom:1.5rem;
       outline:none; border:none; background:transparent;
-      color:var(--purple); text-align:center; width:100%;
-      text-shadow:0 2px 5px rgba(122,80,167,0.4);
+      color: var(--purple); /* همان رنگ بنفش اصلی */
+      text-align:center; width:100%;
+      text-shadow: 0 3px 8px rgba(122,80,167,0.5);
     }
 
     .buttons { display:flex; justify-content:space-between; gap:1rem; margin-bottom:1.5rem; }
     .btn {
       width:55px; height:55px; border-radius:50%;
-      border:1px solid rgba(122,80,167,0.4);
-      background: rgba(122,80,167,0.15);
+      border:1px solid rgba(122,80,167,0.5);
+      background: rgba(122,80,167,0.2);
       color:var(--purple); cursor:pointer;
       transition: background 0.2s, box-shadow 0.2s;
       display:flex; justify-content:center; align-items:center;
-      box-shadow:0 4px 10px rgba(122,80,167,0.3);
+      box-shadow:0 6px 15px rgba(122,80,167,0.5);
     }
-    .btn:hover { background: rgba(122,80,167,0.3); box-shadow:0 6px 15px rgba(122,80,167,0.5);}
+    .btn:hover {
+      background: rgba(122,80,167,0.4);
+      box-shadow:0 8px 20px rgba(122,80,167,0.8);
+    }
     .btn svg { width:22px; height:22px; fill:currentColor;}
 
     .theme-switch {
@@ -89,10 +95,10 @@
 
     .modal {
       padding: 2rem; border-radius: 1rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 30px rgba(122,80,167,0.7);
       text-align:center; width: 250px;
       backdrop-filter: blur(15px);
-      border: 1px solid rgba(122,80,167,0.3);
+      border: 1px solid rgba(122,80,167,0.5);
       transition: background 0.3s, color 0.3s;
     }
 
@@ -102,7 +108,7 @@
     }
 
     body.dark .modal {
-      background: rgba(44,44,43,0.95); /* هم‌رنگ callout نوشن */
+      background: rgba(25,25,25,0.95);
       color: var(--purple);
     }
 
@@ -149,7 +155,7 @@
     let timer;
     let time = 300;
     let running = false;
-    const FORM_URL = "https://www.notion.so/268b5af009ba804a9e62cfb2be55ed04"; // 🔗 لینک فرم نوشن اینجا
+    const FORM_URL = "https://www.notion.so/268b5af009ba804a9e62cfb2be55ed04";
 
     const timeDisplay = document.getElementById('timeDisplay');
     const startBtn = document.getElementById('startBtn');
@@ -173,7 +179,7 @@
 
     function resetTimer(){
       clearInterval(timer); running=false;
-      time = 300; // ریست به ۵ دقیقه
+      time = 300;
       updateDisplay();
     }
 
@@ -185,7 +191,7 @@
           else{
             clearInterval(timer); running=false;
             alarm.play();
-            showOverlay(); // وقتی خودکار تموم بشه
+            showOverlay();
           }
         },1000);
       }
@@ -194,11 +200,11 @@
     endBtn.onclick = ()=>{
       clearInterval(timer); running=false;
       time=0; updateDisplay();
-      showOverlay(); // وقتی دکمه اتمام زده بشه
+      showOverlay();
     };
 
     okBtn.onclick = ()=>{
-      window.open(FORM_URL, "_blank"); // باز کردن فرم توی تب جدید
+      window.open(FORM_URL, "_blank");
       hideOverlay();
       resetTimer();
     };
@@ -218,7 +224,7 @@
     }
     const savedTheme=localStorage.getItem("theme");
     if(savedTheme){applyTheme(savedTheme);}
-    else{applyTheme("dark");} // پیش‌فرض روی رنگ callout
+    else{applyTheme("dark");} 
     themeSwitch.onclick=()=>{applyTheme(document.body.classList.contains("light")?"dark":"light");}
     updateDisplay();
   </script>
