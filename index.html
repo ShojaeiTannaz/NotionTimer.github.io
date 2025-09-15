@@ -9,7 +9,7 @@
     :root {
       --purple: #7a50a7; /* رنگ اصلی بنفش */
       --light-bg: rgba(255,255,255,0.05);
-      --dark-bg: #191919;
+      --dark-bg: #1F2020; /* تم دارک جدید */
     }
 
     body {
@@ -27,7 +27,7 @@
     }
 
     body.dark {
-      background: linear-gradient(145deg, #191919, #0f0f0f);
+      background: linear-gradient(145deg, #1F2020, #161616); /* گرادیان ملایم با رنگ جدید */
       color: var(--purple);
     }
 
@@ -42,7 +42,7 @@
     }
 
     body.dark .timer-container {
-      background: rgba(25,25,25,0.92); 
+      background: rgba(31,32,32,0.92); 
       border: 1px solid rgba(122,80,167,0.5);
       box-shadow: 0 12px 35px rgba(122,80,167,0.6), inset 0 0 20px rgba(122,80,167,0.1);
     }
@@ -50,7 +50,7 @@
     .time-display {
       font-size:2.8rem; font-weight:bold; margin-bottom:1.5rem;
       outline:none; border:none; background:transparent;
-      color: var(--purple); /* همان رنگ بنفش اصلی */
+      color: var(--purple); /* رنگ بنفش عناصر */
       text-align:center; width:100%;
       text-shadow: 0 3px 8px rgba(122,80,167,0.5);
     }
@@ -108,7 +108,7 @@
     }
 
     body.dark .modal {
-      background: rgba(25,25,25,0.95);
+      background: rgba(31,32,32,0.95);
       color: var(--purple);
     }
 
